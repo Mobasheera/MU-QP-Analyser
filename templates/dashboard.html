@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Dashboard &mdash; MU Question Paper Analyzer{% endblock %}
+
+{% block content %}
+<section class="mu-dashboard">
+  <div class="mu-section-inner">
+
+    <div class="mu-dash-header">
+      <div>
+        <h1 class="mu-dash-title">Analysis Dashboard</h1>
+        <p class="mu-dash-sub">Run <code>{{ data.run_id }}</code> &middot;
+          {{ data.stats.paper_count }} paper(s) analyzed</p>
+      </div>
+      <a href="{{ url_for('main.landing') }}" class="btn mu-btn-ghost">
+        <i class="bi bi-upload me-1"></i>New Analysis
+      </a>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="mu-stat-grid">
+      <div class="mu-stat-card">
+        <i class="bi bi-file-earmark-text"></i>
+        <div class="mu-stat-value">{{ data.stats.paper_count }}</div>
+        <div class="mu-stat-label">Papers</div>
+      </div>
+      <div class="mu-stat-card">
+        <i class="bi bi-patch-question"></i>
+        <div class="mu-stat-value">{{ data.stats.question_count }}</div>
+        <div class="mu-stat-label">Questions Extracted</div>
+      </div>
+      <div class="mu-stat-card">
+        <i class="bi bi-diagram-3"></i>
+        <div class="mu-stat-value">{{ data.stats.topic_count }}</div>
+        <div class="mu-stat-label">Topics Detected</div>
+      </div>
+      <div class="mu-stat-card mu-stat-flag">
+        <i class="bi bi-copy"></i>
+        <div class="mu-stat-value">{{ data.stats.repeated_count }}</div>
+        <div class="mu-stat-label">Repeated Questions</div>
+      </div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="row g-4 mu-chart-row">
+      <div class="col-lg-7">
+        <div class="mu-panel">
+          <h2 class="mu-panel-title"><i class="bi bi-bar-chart-line me-2"></i>Topic Frequency</h2>
+          <canvas id="topic-chart" height="220"></canvas>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="mu-panel">
+          <h2 class="mu-panel-title"><i class="bi bi-cloud me-2"></i>Word Cloud</h2>
+          <img src="{{ url_for('static', filename=data.wordcloud_path) }}" alt="Word cloud" class="mu-wordcloud-img">
+        </div>
+      </div>
+    </div>
+
+    <!-- N-grams -->
+    <div class="row g-4 mu-chart-row">
+      <div class="col-lg-6">
+        <div class="mu-panel">
+          <h2 class="mu-panel-title"><i class="bi bi-list-ol me-2"></i>Top Bigrams</h2>
+          <ul class="mu-ngram-list" id="bigram-list"></ul>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="mu-panel">
+          <h2 class="mu-panel-title"><i class="bi bi-list-ol me-2"></i>Top Trigrams</h2>
+          <ul class="mu-ngram-list" id="trigram-list"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Repeated questions -->
+    <div class="mu-panel mu-chart-row">
+      <h2 class="mu-panel-title"><i class="bi bi-copy me-2"></i>Repeated Question Detector</h2>
+      <p class="mu-panel-note">Flagged using semantic sentence similarity &mdash; not keyword overlap.</p>
+      <div class="table-responsive">
+        <table class="table mu-table" id="repeated-table">
+          <thead>
+            <tr><th>Paper A</th><th>Question</th><th>Paper B</th><th>Question</th><th>Similarity</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Topic timeline (optional feature) -->
+    {% if data.timeline.years %}
+    <div class="mu-panel mu-chart-row">
+      <h2 class="mu-panel-title"><i class="bi bi-calendar3 me-2"></i>Topic Timeline</h2>
+      <div class="table-responsive">
+        <table class="table mu-table" id="timeline-table">
+          <thead><tr><th>Topic</th>{% for y in data.timeline.years %}<th>{{ y }}</th>{% endfor %}</tr></thead>
+          <tbody>
+            {% for row in data.timeline.rows %}
+            <tr>
+              <td>{{ row.topic }}</td>
+              {% for y in data.timeline.years %}
+                <td class="text-center">{% if row.years[y] %}<i class="bi bi-check-circle-fill mu-tick"></i>{% else %}&mdash;{% endif %}</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Question viewer + search -->
+    <div class="mu-panel mu-chart-row">
+      <div class="mu-question-header">
+        <h2 class="mu-panel-title mb-0"><i class="bi bi-journal-text me-2"></i>Question Viewer</h2>
+        <div class="mu-search-box">
+          <input type="text" id="search-input" class="form-control" placeholder="Search e.g. 'stemming'...">
+          <div class="btn-group mu-search-mode" role="group">
+            <input type="radio" class="btn-check" name="search-mode" id="mode-keyword" value="keyword" checked>
+            <label class="btn btn-sm mu-btn-ghost" for="mode-keyword">Keyword</label>
+            <input type="radio" class="btn-check" name="search-mode" id="mode-semantic" value="semantic">
+            <label class="btn btn-sm mu-btn-ghost" for="mode-semantic">Semantic</label>
+          </div>
+        </div>
+      </div>
+      <div id="question-grid" class="mu-question-grid"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Question inspect modal -->
+<div class="modal fade" id="question-modal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content mu-modal">
+      <div class="modal-header">
+        <h5 class="modal-title" id="question-modal-label">Question</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="question-modal-body">
+        <div class="text-center py-4"><div class="spinner-border" role="status"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="dashboard-data" type="application/json">{{ data | tojson }}</script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

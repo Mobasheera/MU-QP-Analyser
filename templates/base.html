@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Mumbai University Question Paper Analyzer{% endblock %}</title>
+
+<!-- Bootstrap 5 -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+
+<!-- Fonts: serif display (exam-paper feel) + sans body + mono for data/marks -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<nav class="mu-nav">
+  <div class="mu-nav-inner">
+    <a class="mu-brand" href="{{ url_for('main.landing') }}">
+      <span class="mu-brand-mark">QP</span>
+      <span class="mu-brand-text">MU Question Paper Analyzer</span>
+    </a>
+    <div class="mu-nav-right">
+      <span class="mu-nav-tag">NLP Lab &middot; Sem VII Mini Project</span>
+      <button id="theme-toggle" class="mu-theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+        <i class="bi bi-moon-stars"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="mu-footer">
+  <div class="mu-footer-inner">
+    <span>Mumbai University Question Paper Analyzer &mdash; built for academic NLP demonstration.</span>
+    <span class="mu-footer-stack">Flask &middot; spaCy &middot; sentence-transformers &middot; scikit-learn</span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

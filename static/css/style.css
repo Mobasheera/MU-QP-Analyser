@@ -1,0 +1,285 @@
+/* =========================================================================
+   Design tokens
+   Palette born from the subject itself: an exam-paper's ink, its official
+   stamp, and the highlighter a student drags across a recurring question.
+   ========================================================================= */
+:root {
+  --ink:        #16233B;   /* body text, primary dark */
+  --ink-soft:   #4B5768;
+  --paper:      #F5F6F2;   /* page background - cool paper, not warm cream */
+  --surface:    #FFFFFF;
+  --line:       #DEDCD1;
+  --teal:       #1F6F63;   /* brand / primary accent */
+  --teal-deep:  #164F47;
+  --amber:      #E0982A;   /* highlighter accent - marks, stamps, warnings */
+  --crimson:    #B23A48;   /* repeated-question flag */
+  --shadow: 0 1px 2px rgba(22,35,59,0.04), 0 6px 20px rgba(22,35,59,0.06);
+
+  --font-display: "Source Serif 4", Georgia, serif;
+  --font-body: "IBM Plex Sans", -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --radius: 14px;
+}
+
+[data-theme="dark"] {
+  --ink:        #E8E7E0;
+  --ink-soft:   #A9AFB8;
+  --paper:      #0F1720;
+  --surface:    #16202B;
+  --line:       #2A3644;
+  --teal:       #4FB3A2;
+  --teal-deep:  #7ED1C2;
+  --amber:      #F0B24F;
+  --crimson:    #E1707C;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  transition: background 0.25s ease, color 0.25s ease;
+  margin: 0;
+}
+
+h1, h2, h3 { font-family: var(--font-display); }
+
+code, .mu-mono { font-family: var(--font-mono); }
+
+a { color: var(--teal-deep); }
+
+/* =========================================================================
+   Navigation
+   ========================================================================= */
+.mu-nav {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  position: sticky; top: 0; z-index: 50;
+}
+.mu-nav-inner {
+  max-width: 1180px; margin: 0 auto; padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.mu-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.mu-brand-mark {
+  font-family: var(--font-mono); font-weight: 500; font-size: 0.75rem;
+  border: 1.5px solid var(--teal); color: var(--teal); border-radius: 6px;
+  padding: 3px 7px; letter-spacing: 0.04em;
+}
+.mu-brand-text { font-weight: 600; font-size: 1.02rem; }
+.mu-nav-right { display: flex; align-items: center; gap: 16px; }
+.mu-nav-tag { font-size: 0.78rem; color: var(--ink-soft); font-family: var(--font-mono); }
+.mu-theme-toggle {
+  border: 1px solid var(--line); background: transparent; color: var(--ink);
+  width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.mu-theme-toggle:hover { background: var(--paper); }
+
+/* =========================================================================
+   Hero
+   ========================================================================= */
+.mu-hero { padding: 64px 24px 40px; }
+.mu-hero-inner {
+  max-width: 1180px; margin: 0 auto;
+  display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 56px; align-items: center;
+}
+.mu-eyebrow {
+  display: inline-block; font-family: var(--font-mono); font-size: 0.76rem;
+  color: var(--teal-deep); background: color-mix(in srgb, var(--teal) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
+  padding: 4px 10px; border-radius: 100px; margin-bottom: 18px;
+}
+.mu-hero-title {
+  font-size: 2.7rem; line-height: 1.12; font-weight: 600; margin: 0 0 18px;
+  letter-spacing: -0.01em;
+}
+.mu-hero-sub { font-size: 1.08rem; color: var(--ink-soft); max-width: 46ch; line-height: 1.6; }
+.mu-hero-stages { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+.mu-stage-chip {
+  font-family: var(--font-mono); font-size: 0.78rem; padding: 6px 12px;
+  border-radius: 100px; border: 1px solid var(--line); color: var(--ink-soft);
+  background: var(--surface);
+}
+
+.mu-hero-upload {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 22px; box-shadow: var(--shadow);
+}
+.mu-dropzone {
+  border: 1.5px dashed color-mix(in srgb, var(--teal) 50%, var(--line));
+  border-radius: 10px; padding: 34px 18px; text-align: center; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.mu-dropzone:hover, .mu-dropzone.mu-drag-over {
+  border-color: var(--teal); background: color-mix(in srgb, var(--teal) 6%, transparent);
+}
+.mu-dropzone-icon { font-size: 2.1rem; color: var(--teal); }
+.mu-dropzone-title { font-weight: 600; margin: 10px 0 2px; }
+.mu-dropzone-sub { font-size: 0.85rem; color: var(--ink-soft); margin: 0; }
+
+.mu-file-list { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-direction: column; gap: 6px; }
+.mu-file-list li {
+  display: flex; align-items: center; gap: 8px; font-size: 0.86rem;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px;
+}
+.mu-file-list li i { color: var(--teal); }
+
+.mu-btn-primary {
+  background: var(--teal); color: #fff; border: none; font-weight: 600;
+  padding: 11px 16px; border-radius: 10px; transition: background 0.2s;
+}
+.mu-btn-primary:hover:not(:disabled) { background: var(--teal-deep); color: #fff; }
+.mu-btn-primary:disabled { opacity: 0.5; }
+
+.mu-btn-ghost {
+  border: 1px solid var(--line); color: var(--ink); background: var(--surface);
+  border-radius: 10px; font-weight: 500;
+}
+.mu-btn-ghost:hover { background: var(--paper); color: var(--ink); }
+
+.mu-upload-status { font-size: 0.85rem; color: var(--ink-soft); margin-top: 10px; min-height: 1.2em; }
+
+/* =========================================================================
+   Sections shared layout
+   ========================================================================= */
+.mu-section-inner { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+.mu-section-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 26px; }
+.mu-pipeline, .mu-features { padding: 30px 0 70px; }
+
+.mu-pipeline-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.mu-pipeline-step {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 20px; position: relative;
+}
+.mu-pipeline-num {
+  font-family: var(--font-mono); color: var(--amber); font-weight: 500; font-size: 0.85rem;
+}
+.mu-pipeline-step h3 { font-size: 1.05rem; margin: 8px 0 6px; }
+.mu-pipeline-step p { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0; }
+
+.mu-feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.mu-feature-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 22px; text-align: left;
+}
+.mu-feature-icon { font-size: 1.5rem; color: var(--teal); }
+.mu-feature-card h3 { font-size: 1.02rem; margin: 12px 0 6px; }
+.mu-feature-card p { font-size: 0.87rem; color: var(--ink-soft); line-height: 1.5; margin: 0; }
+
+/* =========================================================================
+   Dashboard
+   ========================================================================= */
+.mu-dashboard { padding: 40px 0 80px; }
+.mu-dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; }
+.mu-dash-title { font-size: 1.9rem; font-weight: 600; margin: 0; }
+.mu-dash-sub { color: var(--ink-soft); font-size: 0.9rem; margin: 4px 0 0; }
+
+.mu-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 30px; }
+.mu-stat-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 20px; position: relative; box-shadow: var(--shadow);
+}
+.mu-stat-card i { color: var(--teal); font-size: 1.2rem; }
+.mu-stat-flag i { color: var(--crimson); }
+.mu-stat-value { font-family: var(--font-mono); font-size: 2rem; font-weight: 500; margin-top: 8px; }
+.mu-stat-label { color: var(--ink-soft); font-size: 0.84rem; }
+
+.mu-chart-row { margin-bottom: 24px; }
+.mu-panel {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 22px; height: 100%; box-shadow: var(--shadow);
+}
+.mu-panel-title { font-size: 1.08rem; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; }
+.mu-panel-note { color: var(--ink-soft); font-size: 0.82rem; margin-bottom: 14px; }
+
+.mu-wordcloud-img { width: 100%; border-radius: 8px; border: 1px solid var(--line); }
+
+.mu-ngram-list { list-style: none; padding: 0; margin: 0; }
+.mu-ngram-list li {
+  display: flex; justify-content: space-between; padding: 7px 0;
+  border-bottom: 1px dashed var(--line); font-size: 0.9rem;
+}
+.mu-ngram-list li:last-child { border-bottom: none; }
+.mu-ngram-list .mu-ngram-count {
+  font-family: var(--font-mono); color: var(--teal-deep); font-size: 0.82rem;
+}
+
+.mu-table { color: var(--ink); font-size: 0.88rem; margin-bottom: 0; }
+.mu-table thead th { border-bottom: 2px solid var(--line); color: var(--ink-soft); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.mu-table td, .mu-table th { border-color: var(--line); vertical-align: middle; }
+.mu-tick { color: var(--teal); }
+
+.mu-question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px; }
+.mu-search-box { display: flex; gap: 10px; align-items: center; }
+.mu-search-box input { min-width: 240px; }
+.mu-search-mode .btn { font-size: 0.8rem; }
+
+.mu-question-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+
+/* Signature element: each question rendered like a stamped answer-script
+   card, with a torn top edge and a circular "seal" carrying its label -
+   echoing the library stamps/QP-code seals on the real source papers. */
+.mu-question-card {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px 16px 14px; cursor: pointer; position: relative; transition: transform 0.15s, box-shadow 0.15s;
+}
+.mu-question-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.mu-question-seal {
+  position: absolute; top: -10px; right: 14px;
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1.5px solid var(--teal); color: var(--teal);
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 0.68rem; font-weight: 600;
+  transform: rotate(-8deg);
+}
+.mu-question-topic {
+  display: inline-block; font-size: 0.72rem; font-family: var(--font-mono);
+  color: var(--teal-deep); background: color-mix(in srgb, var(--teal) 10%, transparent);
+  padding: 2px 8px; border-radius: 100px; margin-bottom: 8px;
+}
+.mu-question-text { font-size: 0.92rem; line-height: 1.45; margin: 0 0 8px; }
+.mu-question-meta { font-size: 0.75rem; color: var(--ink-soft); display: flex; justify-content: space-between; }
+
+.mu-modal { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+.mu-modal .modal-header, .mu-modal .modal-footer { border-color: var(--line); }
+.mu-inspect-section { margin-bottom: 16px; }
+.mu-inspect-section h6 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); margin-bottom: 8px; }
+.mu-token-pill {
+  display: inline-block; font-family: var(--font-mono); font-size: 0.78rem;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 6px;
+  padding: 2px 7px; margin: 2px 3px 2px 0;
+}
+.mu-morph-table { width: 100%; font-size: 0.82rem; }
+.mu-morph-table td { padding: 3px 6px; border-bottom: 1px solid var(--line); }
+
+/* =========================================================================
+   Footer
+   ========================================================================= */
+.mu-footer { border-top: 1px solid var(--line); padding: 22px 24px; background: var(--surface); }
+.mu-footer-inner {
+  max-width: 1180px; margin: 0 auto; display: flex; justify-content: space-between;
+  font-size: 0.8rem; color: var(--ink-soft); flex-wrap: wrap; gap: 8px;
+}
+
+/* =========================================================================
+   Responsive
+   ========================================================================= */
+@media (max-width: 992px) {
+  .mu-hero-inner { grid-template-columns: 1fr; }
+  .mu-pipeline-row, .mu-feature-grid { grid-template-columns: repeat(2, 1fr); }
+  .mu-stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .mu-hero-title { font-size: 2rem; }
+  .mu-pipeline-row, .mu-feature-grid, .mu-stat-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

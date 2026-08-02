@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}MU Question Paper Analyzer &mdash; Upload{% endblock %}
+
+{% block content %}
+
+<section class="mu-hero">
+  <div class="mu-hero-inner">
+    <div class="mu-hero-copy">
+      <span class="mu-eyebrow">Q1 &middot; Compulsory &middot; Attempt any four</span>
+      <h1 class="mu-hero-title">Question papers hold patterns.<br>This finds them.</h1>
+      <p class="mu-hero-sub">
+        Upload a few years of Mumbai University question papers and watch NLP do
+        what a topper does the night before an exam: spot the concepts that keep
+        coming back, in whatever words they're asked.
+      </p>
+
+      <div class="mu-hero-stages">
+        <span class="mu-stage-chip">Tokenize</span>
+        <span class="mu-stage-chip">Lemmatize</span>
+        <span class="mu-stage-chip">POS Tag</span>
+        <span class="mu-stage-chip">Chunk</span>
+        <span class="mu-stage-chip">NER</span>
+        <span class="mu-stage-chip">Embed</span>
+        <span class="mu-stage-chip">Cluster</span>
+      </div>
+    </div>
+
+    <div class="mu-hero-upload">
+      <div id="dropzone" class="mu-dropzone">
+        <i class="bi bi-file-earmark-arrow-up mu-dropzone-icon"></i>
+        <p class="mu-dropzone-title">Drop question papers here</p>
+        <p class="mu-dropzone-sub">or click to browse &middot; PDF only &middot; multiple files supported</p>
+        <input type="file" id="file-input" accept=".pdf" multiple hidden>
+      </div>
+
+      <ul id="file-list" class="mu-file-list"></ul>
+
+      <button id="analyze-btn" class="btn mu-btn-primary w-100 mt-3" disabled>
+        <i class="bi bi-graph-up-arrow me-2"></i>Analyze Papers
+      </button>
+
+      <div id="upload-status" class="mu-upload-status"></div>
+      {% if error %}
+        <div class="alert alert-danger mt-3 mb-0">{{ error }}</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="mu-pipeline">
+  <div class="mu-section-inner">
+    <h2 class="mu-section-title">The document pipeline</h2>
+    <div class="mu-pipeline-row">
+      <div class="mu-pipeline-step">
+        <span class="mu-pipeline-num">01</span>
+        <h3>Extract</h3>
+        <p>PyMuPDF pulls native text where it exists; pages with no usable
+          text layer fall back to OpenCV-cleaned, deskewed OCR.</p>
+      </div>
+      <div class="mu-pipeline-step">
+        <span class="mu-pipeline-num">02</span>
+        <h3>Segment</h3>
+        <p>Every Q1(a), Q2(b)... sub-part becomes its own question &mdash;
+          never one blob of PDF text.</p>
+      </div>
+      <div class="mu-pipeline-step">
+        <span class="mu-pipeline-num">03</span>
+        <h3>Analyze</h3>
+        <p>Twelve NLP stages run per question and across the corpus:
+          tokenization through topic clustering.</p>
+      </div>
+      <div class="mu-pipeline-step">
+        <span class="mu-pipeline-num">04</span>
+        <h3>Reveal</h3>
+        <p>Topic frequency, repeated questions, and semantic search &mdash;
+          rendered on a single dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mu-features">
+  <div class="mu-section-inner">
+    <h2 class="mu-section-title">What you'll get on the dashboard</h2>
+    <div class="mu-feature-grid">
+      <div class="mu-feature-card">
+        <i class="bi bi-diagram-3 mu-feature-icon"></i>
+        <h3>Topic Detection</h3>
+        <p>Questions clustered by embedding similarity and labeled with the syllabus topic they belong to.</p>
+      </div>
+      <div class="mu-feature-card">
+        <i class="bi bi-copy mu-feature-icon"></i>
+        <h3>Repeated Questions</h3>
+        <p>Semantically near-identical questions across different years, with a similarity score.</p>
+      </div>
+      <div class="mu-feature-card">
+        <i class="bi bi-cloud mu-feature-icon"></i>
+        <h3>Word Cloud &amp; N-Grams</h3>
+        <p>The vocabulary and phrase patterns (bigrams/trigrams) that dominate the corpus.</p>
+      </div>
+      <div class="mu-feature-card">
+        <i class="bi bi-search mu-feature-icon"></i>
+        <h3>Concept Search</h3>
+        <p>Search by keyword or by meaning &mdash; "stemming" also surfaces "Porter's algorithm" questions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}
