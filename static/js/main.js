@@ -61,12 +61,26 @@
     selectedFiles.forEach((file) => formData.append("papers", file));
 
     try {
-      const response = await fetch("/upload", { method: "POST", body: formData });
-      const payload = await response.json();
-
-      if (!response.ok) {
-        throw new Error(payload.error || "Something went wrong.");
-      }
+        const response = await fetch("/upload", {
+        method: "POST",
+        body: formData
+        });
+        
+        const responseText = await response.text();
+        
+        let payload = {};
+        
+        try {
+        payload = responseText ? JSON.parse(responseText) : {};
+        } catch {
+        throw new Error(
+            `Server returned an invalid response (HTTP ${response.status}).`
+        );
+        }
+        
+        if (!response.ok) {
+        throw new Error(payload.error || `Server error (HTTP ${response.status}).`);
+        }
 
       window.location.href = `/dashboard/${payload.run_id}`;
     } catch (err) {
