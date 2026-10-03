@@ -24,5 +24,8 @@ RUN python -m spacy download en_core_web_sm
 # Copy the project
 COPY . .
 
+# Expose Render's HTTP port
+EXPOSE 10000
+
 # Render provides the PORT environment variable
 CMD gunicorn --bind 0.0.0.0:${PORT:-10000} app:app
