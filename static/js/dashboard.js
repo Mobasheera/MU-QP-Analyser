@@ -155,6 +155,25 @@
   renderNgramList("trigram-list", ngrams.trigrams);
 
   // ---------------------------------------------------------------------
+  // Display cleanup for older analysis runs
+  // ---------------------------------------------------------------------
+  // The backend now cleans these artifacts before NLP processing. This
+  // second, lightweight pass also makes an already-open/previously-created
+  // run readable without requiring the server to regenerate its data.
+  function cleanDisplayText(text) {
+    if (!text) return "";
+    let value = String(text);
+    value = value.replace(/<\s*\/?\s*(?:s|sentence)\s*>/gi, " ");
+    value = value.replace(/\/(?:NN|NNS|NNP|NNPS|VB|VBD|VBG|VBN|VBP|VBZ|V|DT|JJ|JJR|JJS|RB|RBR|RBS|IN|PRP|PRP\$|CC|CD|MD|TO|P|PDT|POS|WDT|WP|WP\$|WRB|EX|UH|RP|SYM)\b/gi, "");
+    value = value.replace(/\b[0-9A-Fa-f]{20,}\b/g, " ");
+    value = value.replace(/\b(?=[A-Za-z0-9]{24,}\b)(?=[A-Za-z0-9]*\d)[A-Za-z0-9]+\b/g, " ");
+    value = value.replace(/[©®™�¤§¥≈≠]/g, " ");
+    value = value.replace(/\s+/g, " ").trim();
+    value = value.replace(/\s+([,.;:!?])/g, "$1");
+    return value;
+  }
+
+  // ---------------------------------------------------------------------
   // Repeated questions table
   // ---------------------------------------------------------------------
   const repeatedBody = document.querySelector("#repeated-table tbody");
@@ -176,9 +195,9 @@
           const badgeClass = score >= 90 ? "text-bg-danger" : "text-bg-warning";
           return `<tr>
             <td>${escapeHtml(a.source_file || "Unknown")}<br><small class="text-muted">${escapeHtml(a.year || "Unknown")}</small></td>
-            <td>${escapeHtml(truncate(a.text, 90))}</td>
+            <td>${escapeHtml(truncate(cleanDisplayText(a.text), 90))}</td>
             <td>${escapeHtml(b.source_file || "Unknown")}<br><small class="text-muted">${escapeHtml(b.year || "Unknown")}</small></td>
-            <td>${escapeHtml(truncate(b.text, 90))}</td>
+            <td>${escapeHtml(truncate(cleanDisplayText(b.text), 90))}</td>
             <td><span class="badge ${badgeClass}">${score}%</span></td>
           </tr>`;
         })
@@ -213,7 +232,7 @@
         <div class="mu-question-card" data-question-id="${escapeAttr(q.id || "")}">
           <div class="mu-question-seal">${escapeHtml(sealLabel(q))}</div>
           <span class="mu-question-topic">${escapeHtml(q.topic || "Unclassified")}</span>
-          <p class="mu-question-text">${escapeHtml(truncate(q.text, 140))}</p>
+          <p class="mu-question-text">${escapeHtml(truncate(cleanDisplayText(q.text), 140))}</p>
           <div class="mu-question-meta">
             <span>${escapeHtml(q.label || "Question")} &middot; ${escapeHtml(q.source_file || "Unknown")}</span>
             <span>${escapeHtml(q.year || "Unknown")}</span>
@@ -254,6 +273,21 @@
     }
   }
 
+  function updateSearchModeUI() {
+    if (!searchInput) return;
+    const modeEl = document.querySelector('input[name="search-mode"]:checked');
+    const mode = modeEl ? modeEl.value : "keyword";
+    searchInput.placeholder = mode === "semantic"
+      ? "Search by meaning, e.g. 'language ambiguity'..."
+      : "Search e.g. 'stemming'...";
+
+    if (!searchInput.value.trim() && mode === "semantic" && questionGrid) {
+      questionGrid.innerHTML = `<p class="text-muted">Enter a concept or phrase to search semantically across the questions.</p>`;
+    } else if (!searchInput.value.trim() && mode === "keyword") {
+      renderQuestions(data.questions || []);
+    }
+  }
+
   if (searchInput) {
     searchInput.addEventListener("input", () => {
       clearTimeout(searchTimer);
@@ -262,8 +296,12 @@
   }
 
   document.querySelectorAll('input[name="search-mode"]').forEach((el) => {
-    el.addEventListener("change", runSearch);
+    el.addEventListener("change", () => {
+      updateSearchModeUI();
+      if (searchInput && searchInput.value.trim()) runSearch();
+    });
   });
+  updateSearchModeUI();
 
   // ---------------------------------------------------------------------
   // Per-question NLP inspect modal (stages 1-7, on demand)
@@ -339,7 +377,7 @@
     const tokensNoStopwords = Array.isArray(analysis.tokens_no_stopwords) ? analysis.tokens_no_stopwords : [];
 
     modalBody.innerHTML = `
-      <p class="fw-semibold">${escapeHtml(question?.text || "")}</p>
+      <p class="fw-semibold">${escapeHtml(cleanDisplayText(question?.text || ""))}</p>
 
       <div class="mu-inspect-section">
         <h6>1·2 · Tokens &amp; Stopword Removal</h6>
