@@ -8,8 +8,7 @@
     <div class="mu-dash-header">
       <div>
         <h1 class="mu-dash-title">Analysis Dashboard</h1>
-        <p class="mu-dash-sub">Run <code>{{ data.run_id }}</code> &middot;
-          {{ data.stats.paper_count }} paper(s) analyzed</p>
+        <p class="mu-dash-sub">{{ data.stats.paper_count }} paper{% if data.stats.paper_count != 1 %}s{% endif %} analyzed</p>
       </div>
       <a href="{{ url_for('main.landing') }}" class="btn mu-btn-ghost">
         <i class="bi bi-upload me-1"></i>New Analysis
